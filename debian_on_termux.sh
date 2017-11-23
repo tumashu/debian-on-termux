@@ -40,7 +40,7 @@ $DO_FIRST_STAGE && {
 }
 apt update 2>&1 | filter
 DEBIAN_FRONTEND=noninteractive apt -y install perl proot 2>&1 | filter
-wget http://http.debian.net/debian/pool/main/d/debootstrap/debootstrap_1.0.92.tar.gz -O - | tar xfz -
+wget http://mirrors.163.com/debian/pool/main/d/debootstrap/debootstrap_1.0.92.tar.gz -O - | tar xfz -
 cd debootstrap-1.0.92
 #
 # minimum patch needed for debootstrap to work in this environment
@@ -94,7 +94,7 @@ $PREFIX/bin/proot \
     -r $PREFIX/.. \
     -0 \
     --link2symlink \
-    ./debootstrap --foreign --arch=$ARCHITECTURE $VERSION $HOME/$ROOTFS_TOP http://deb.debian.org/debian \
+    ./debootstrap --foreign --arch=$ARCHITECTURE $VERSION $HOME/$ROOTFS_TOP http://mirrors.163.com/debian \
                                                                 || : # proot returns invalid exit status
 } # end DO_FIRST_STAGE
 
