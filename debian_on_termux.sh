@@ -3,16 +3,16 @@
 #
 # some configuration. adapt this to your needs
 #
-#set -x  
+#set -x
 set -e
 DO_FIRST_STAGE=: # false   # required (unpack phase/ executes outside guest invironment)
 DO_SECOND_STAGE=: # false  # required (complete the install/ executes inside guest invironment)
 DO_THIRD_STAGE=: # false   # optional (enable local policies/ executes inside guest invironment)
 
-ARCHITECTURE=armhf         # supported architectures include: armel, armhf, arm64, i386, amd64
+ARCHITECTURE=arm64         # supported architectures include: armel, armhf, arm64, i386, amd64
 VERSION=stretch            # supported debian versions include: stretch, stable, testing, unstable
 ROOTFS_TOP=deboot_debian   # name of the top install directory
-ZONEINFO=Europe/Berlin     # set your desired time zone
+ZONEINFO=Asia/Shanghai     # set your desired time zone
 
 filter() {
     egrep -v '^$|^WARNING: apt does'
@@ -39,7 +39,7 @@ $DO_FIRST_STAGE && {
     exit
 }
 apt update 2>&1 | filter
-DEBIAN_FRONTEND=noninteractive apt -y install perl proot 2>&1 | filter                              
+DEBIAN_FRONTEND=noninteractive apt -y install perl proot 2>&1 | filter
 wget http://http.debian.net/debian/pool/main/d/debootstrap/debootstrap_1.0.92.tar.gz -O - | tar xfz -
 cd debootstrap-1.0.92
 #
@@ -61,7 +61,7 @@ patch << 'EOF'
  		umount_on_exit /dev
 @@ -1162,6 +1166,10 @@
  }
- 
+
  setup_devices_simple () {
 +
 +echo setup_devices_simple
@@ -105,7 +105,7 @@ $PREFIX/bin/proot \
 $DO_SECOND_STAGE && {
 #
 # place some precrafted templates to avoid execution of adduser, addgroup
-# and the like. Since these do not work well in this 
+# and the like. Since these do not work well in this
 # environment (at least at the time of writing)
 #
 cat << EOF > $HOME/$ROOTFS_TOP/etc/passwd
@@ -351,14 +351,14 @@ ln -nfs /usr/share/zoneinfo/$ZONEINFO /etc/localtime
 dpkg-reconfigure -fnoninteractive tzdata
 dpkg-reconfigure -fnoninteractive debconf
 
-DEBIAN_FRONTEND=noninteractive apt -y update 2>&1 | filter                    
+DEBIAN_FRONTEND=noninteractive apt -y update 2>&1 | filter
 DEBIAN_FRONTEND=noninteractive apt -y upgrade 2>&1 | filter
 DEBIAN_FRONTEND=noninteractive apt -y install locales 2>&1 | filter
 update-locale LANG=en_US.UTF-8 LC_COLLATE=C
 #
 # place any additional packages here as you like
 #
-#DEBIAN_FRONTEND=noninteractive apt -y install rsync less gawk ssh 2>&1 | filter  
+#DEBIAN_FRONTEND=noninteractive apt -y install rsync less gawk ssh 2>&1 | filter
 apt clean 2>&1 | filter
 EOF
 chmod 755 $HOME/$ROOTFS_TOP/tmp/dot_tmp.sh
@@ -371,7 +371,7 @@ $PREFIX/bin/proot \
     --link2symlink \
     /usr/bin/env -i HOME=/root TERM=xterm PATH=/usr/sbin:/usr/bin:/sbin:/bin /tmp/dot_tmp.sh \
                                                       || : # proot returns invalid exit status
-echo 
+echo
 echo installation successfully completed
 echo to enter the guest system type:
 echo '$HOME/bin/enter_deb'
